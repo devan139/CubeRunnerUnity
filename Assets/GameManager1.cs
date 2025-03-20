@@ -1,5 +1,10 @@
+using System;
 using UnityEngine;
-
+using UnityEngine.UI;
+using TMPro;
+using Unity.VisualScripting;
+using UnityEditor.UIElements;
+using UnityEngine.SceneManagement;
 public class GameManager1 : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -8,7 +13,13 @@ public class GameManager1 : MonoBehaviour
     public GameObject[] obstaclePrefabs;
     public Transform player;
     public float destroyDistance = -10f;
-    private int Score = 0;
+    public TextMeshProUGUI ScoreText;
+    private bool flag = true;
+    public static int HighScore = 0;
+    public static int Score = 0;
+    public Button scorebutton;
+    public GameObject gameOverScreen;
+    private bool isGameOver = false;
 
 
     private void Awake()
@@ -29,6 +40,13 @@ public class GameManager1 : MonoBehaviour
         {
             Debug.LogError("Please assign exactly 4 prefabs to the Obstacle Prefabs array!");
         }
+
+        if (gameOverScreen != null)
+        {
+            gameOverScreen.SetActive(false); // Ensure it starts hidden
+        }
+
+
     }
 
     // Update is called once per frame
@@ -52,9 +70,71 @@ public class GameManager1 : MonoBehaviour
     public void AddScore()
     {
         Score += 1;
-        Debug.Log($"Score: {Score}");
-        Debug.Log("Hello");
+        if (HighScore < Score )
+        {
+            HighScore = Score;
+        }
+
+        scorebutton.onClick.AddListener(ButtonClick);
+
+        if (flag)
+        {
+            ScoreText.text = "Score: " + Score;
+        }
+        else
+        {
+            ScoreText.text = "High Score: " + HighScore;
+        }
+        
     }
+
+    public void ButtonClick()
+    {
+        
+        if (flag && scorebutton != null)
+        {
+            flag = false;
+        }
+        else
+        {
+            flag = true;
+        }
+    }
+
+    public void GameOver()
+    {
+        if (!isGameOver)
+        {
+            isGameOver = true;
+            Time.timeScale = 0f;
+            if (gameOverScreen != null)
+            {
+                gameOverScreen.SetActive(true);
+            }
+            else
+            {
+                Debug.Log("GameOverScreen is null or destroyed!");
+            }
+
+        }
+        
+
+    }
+
+    public void Restart()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+
+        if (gameOverScreen != null)
+        {
+            gameOverScreen.SetActive(false);
+        }
+        isGameOver = false;
+        ScoreText.text = "Score: 0";
+    }
+
+
 }
 
 

@@ -50,4 +50,13 @@ public class PlayerMovement1 : MonoBehaviour
             Debug.Log("We hit an obstacle");
         }
     }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.CompareTag("Obstacle"))
+        {
+            GameManager1.Instance.GameOver();
+        }
+    }
+
 }
